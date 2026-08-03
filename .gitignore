@@ -1,0 +1,23 @@
+# Ignore python cache files
+__pycache__/
+*.pyc
+
+# Ignore your virtual environment
+venv/
+
+# Ignore your dataset and images
+data/raw/
+data/processed/
+*.h5
+*.pickle
+
+# Machine Learning Artifacts
+artifacts/*
+!artifacts/.gitkeep
+
+# Python Virtual Environments
+__pycache__
+.venv/
+
+# macOS files
+.DS_Store
