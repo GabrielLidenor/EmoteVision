@@ -1,39 +1,45 @@
-import tensorflow
-from tensorflow.keras.applications import ResNet50V2
-from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
+import torch
+import torch.nn as nn
+from torchvision.models import resnet50, ResNet50_Weights
 
-class FacialRecognitionModel(tensorflow.keras.Model):
-    def __init__(self, num_classes: int = 10, input_shape: tuple = (150, 150, 3)):
+class FacialRecognitionModel(nn.Module):
+    def __init__(self, num_classes: int = 10):
         super().__init__()
 
-        self.input_shape = input_shape
         self.num_classes = num_classes
-        self.base_model = ResNet50V2(
-                weights = 'imagenet',
-                include_top = False,
-                input_shape = self.input_shape
-                )
 
-        # ResNet50V2 is a trained model, which reduces the amount
+        # Pretrained ResNet50 backbone
+        self.base_model = resnet50(weights = ResNet50_Weights.DEFAULT)
+
+        in_features = self.base_model.fc.in_features
+        self.base_model.fc = nn.Identity()
+        # ResNet50 is a pretrained model, which reduces the amount
         # of time we need to train with our data.
         # we freeze the layers to prevent our data to make our model
         # to forget what they pre-trained before.
         # we should only focus on data that the model cannot read with
         # its pre-trained data
-        for layer in self.base_model.layers:
-            layer.trainable = False
+        for param in self.base_model.parameters():
+            param.requires_grad = False
 
-        self.global_pool = GlobalAveragePooling2D()
-        self.dense1 = Dense(256, activation='relu')
-        self.dense2 = Dense(128, activation='relu')
-        self.classifier = Dense(self.num_classes, activation='softmax')
+        self.dense1 = nn.Linear(in_features, 256)
+        self.dense2 = nn.Linear(256, 128)
+        self.classifier = nn.Linear(128, self.num_classes)
+
+        self.relu = nn.ReLU()
 
 
-    def call(self, inputs: tensorflow.Tensor) -> tensorflow.Tensor:
-        feature_map = self.base_model(inputs, training = False)
-        vector = self.global_pool(feature_map)
-        embedding = self.dense2(self.dense1(vector))
-        predictions = self.classifier(embedding)
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Defines the execution pipeline for processing data batches.
+        """
+        features = self.base_model(x)
+        vector = torch.flatten(features, start_dim = 1)
+
+        embedding1 = self.relu(self.dense1(vector))
+        embedding2 = self.relu(self.dense2(embedding1))
+
+        predictions = self.classifier(embedding2)
 
         return predictions
 
