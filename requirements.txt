@@ -1,3 +1,4 @@
 # Deep Learning & Framework Core
 tensorflow>=2.15.0
 torch
+torchvision
