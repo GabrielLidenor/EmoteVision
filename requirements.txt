@@ -2,3 +2,5 @@
 tensorflow>=2.15.0
 torch
 torchvision
+matplotlib
+seaborn

@@ -2,7 +2,9 @@ import torch
 import yaml
 import json
 from typing import Protocol, Any
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report, confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
 import numpy as np
 
 class DataProvider(Protocol):
