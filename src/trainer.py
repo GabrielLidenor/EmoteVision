@@ -1,23 +1,28 @@
 from typing import Protocol, Any
 import torch
+from tqdm import tqdm
 
 class DataProvider(Protocol):
     def get_train_loader(self) -> Any:
         ...
 
 class Trainer:
-    def __init__(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer, criterion: Any):
+    def __init__(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer, criterion: Any, epochs: int = 5):
         self.model = model
         self.optimizer = optimizer
         self.criterion = criterion
+        self.epochs = epochs
 
-    def fit(self, data_provider: DataProvider, epochs: int = 5):
+    def fit(self, data_provider: DataProvider):
         train_loader = data_provider.get_train_loader()
 
-        for epoch in range(epochs):
+        for epoch in range(self.epochs):
             self.model.train()
+            running_loss = 0.0
 
-            for batch in train_loader:
+            pbar = tqdm(train_loader, desc=f"Epoch {epoch+1}/{self.epochs}", leave=False)
+
+            for batch in pbar:
                 # the inputs are the images, and the targets are the labels (the answers )
                 inputs, targets = batch
                 # clears the stored gradients from the previous step
@@ -31,3 +36,7 @@ class Trainer:
                 loss.backward()
                 self.optimizer.step()
 
+                pbar.set_postfix(loss=f"{loss.item():.4f}")
+
+            avg_loss = running_loss / len(train_loader)
+            print(f"Epoch [{epoch+1}/{self.epochs}] - Loss: {avg_loss:.4f}")

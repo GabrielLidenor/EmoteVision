@@ -18,7 +18,7 @@ def trainer_setup():
     model = nn.Linear(2, 2)
     optimizer = torch.optim.SGD(model.parameters(), lr = 0.1)
     criterion = nn.CrossEntropyLoss()
-    trainer = Trainer(model = model, optimizer = optimizer, criterion = criterion)
+    trainer = Trainer(model = model, optimizer = optimizer, criterion = criterion, epochs = 1)
 
     return trainer, model
 
@@ -40,6 +40,6 @@ def test_fit_changes_model_weight(trainer_setup):
     dummy_data = DummyTrainDataModule()
     initial_weight = model.weight.clone()
 
-    trainer.fit(data_provider = dummy_data, epochs = 1)
+    trainer.fit(data_provider = dummy_data)
 
     assert not torch.equal(initial_weight, model.weight), "Model weights did not update during training!"
