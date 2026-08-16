@@ -1,7 +1,10 @@
 from datasets import load_dataset, load_from_disk
 from src.paths import RAW_DATA_DIR, REPO_ID
-import torch
 from torch.utils.data import TensorDataset, DataLoader as TorchDataLoader
+from PIL import Image
+import numpy as np
+import torch
+import torchvision.transforms as T
 
 class DataLoader:
     def __init__(self, test_size = 0.2, batch_size = 32, seed = 42, num_workers = 2):
@@ -23,6 +26,23 @@ class DataLoader:
 
         return load_from_disk(str(self.local_path))
 
+    def _process_images(self, images):
+        """Converts raw lists/arrays to PIL Images and transforms them into 3-channel float32 tensors."""
+        transform = T.Compose([
+            T.Grayscale(num_output_channels=3),  # Ensures RGB layout for ResNet
+            T.ToTensor()                         # Converts PIL Image -> float32 Tensor [3, H, W] in [0, 1]
+        ])
+
+        X_tensors = []
+        for img in images:
+            # Handle mock test inputs (raw list or numpy array)
+            if not isinstance(img, Image.Image):
+                img = Image.fromarray(np.uint8(img))
+
+            X_tensors.append(transform(img))
+
+        return torch.stack(X_tensors)
+
     def get_train_data(self):
         train_data = self.load()['train']
 
@@ -33,8 +53,7 @@ class DataLoader:
 
     def get_train_loader(self):
         X_train, y_train = self.get_train_data()
-
-        X_tensor = torch.tensor(X_train, dtype = torch.float32)
+        X_tensor = self._process_images(X_train)
         y_tensor = torch.tensor(y_train, dtype = torch.long)
 
         dataset = TensorDataset(X_tensor, y_tensor)
@@ -56,8 +75,7 @@ class DataLoader:
 
     def get_test_loader(self):
         X_test, y_test = self.get_test_data()
-
-        X_tensor = torch.tensor(X_test, dtype = torch.float32)
+        X_tensor = self._process_images(X_test)
         y_tensor = torch.tensor(y_test, dtype = torch.long)
 
         dataset = TensorDataset(X_tensor, y_tensor)
