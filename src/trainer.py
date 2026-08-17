@@ -17,6 +17,13 @@ class Trainer:
     def fit(self, data_provider: DataProvider):
         train_loader = data_provider.get_train_loader()
 
+        # Detect device (MPS for Mac M4, CUDA for Nvidia, or CPU)
+        device = torch.device("mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu")
+        print(f"Training on device: {device}")
+
+        # push model to the accelaration device
+        self.model.to(device)
+
         for epoch in range(self.epochs):
             self.model.train()
             running_loss = 0.0
