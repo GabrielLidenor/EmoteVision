@@ -38,14 +38,17 @@ class DataLoader:
         self.seed = seed
         self.num_workers = num_workers
 
+    def _raw_is_empty(self) -> bool:
+        return not any(f for f in self.local_path.iterdir() if not f.name.startswith("."))
+
     def download(self):
         # only download if there's not data in raw folder
-        if not any(self.local_path.iterdir()):
+        if self._raw_is_empty():
             dataset = load_dataset(self.repository_id)
             dataset.save_to_disk(str(self.local_path))
 
     def load(self):
-        if not any(self.local_path.iterdir()):
+        if self._raw_is_empty():
             raise FileNotFoundError("Data folder is empty")
 
         return load_from_disk(str(self.local_path))
