@@ -1,3 +1,3 @@
-from src.models.facial_recognition_model import FacialRecognitionModel
+from src.models.emote_vision_model import EmoteVisionModel
 
-__all__ = ["FacialRecognitionModel"]
+__all__ = ["EmoteVisionModel"]

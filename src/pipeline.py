@@ -6,7 +6,7 @@ from rich.console import Console
 from rich.panel import Panel
 
 from src import DataLoader, Trainer, Evaluator
-from src.models import FacialRecognitionModel
+from src.models import EmoteVisionModel
 
 console = Console()
 
@@ -22,7 +22,7 @@ def run_pipeline(config: dict = None) -> None:
     output_dir = config.get("output_dir", "outputs")
     os.makedirs(output_dir, exist_ok=True)
 
-    console.print(Panel.fit("[bold blue]Facial Expression Recognition Pipeline[/bold blue]"))
+    console.print(Panel.fit("[bold blue]EmoteVision Pipeline[/bold blue]"))
 
     # Step 1: Data Preparation
     with console.status("[bold green]Loading DataModule...[/bold green]", spinner="dots"):
@@ -32,7 +32,7 @@ def run_pipeline(config: dict = None) -> None:
 
     # Step 2: Model & Optimizer Setup
     with console.status("[bold green]Initializing Model & Optimizer...[/bold green]", spinner="dots"):
-        model = FacialRecognitionModel()
+        model = EmoteVisionModel()
         optimizer = optim.Adam(model.parameters(), lr=config["learning_rate"])
         criterion = nn.CrossEntropyLoss()
     console.print("  Initialized Model and Optimizer")
