@@ -1,5 +1,5 @@
 import pytest
-from src.models import FacialRecognitionModel
+from src.models import EmoteVisionModel
 from src import Trainer
 import torch
 import torch.nn as nn

@@ -3,12 +3,13 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torchvision.models import resnet50, ResNet50_Weights
 
-class FacialRecognitionModel(nn.Module):
+
+class EmoteVisionModel(nn.Module):
     def __init__(self, embedding_size: int = 512, num_classes: int = 7):
         super().__init__()
 
         # Pretrained ResNet50 backbone
-        self.base_model = resnet50(weights = ResNet50_Weights.DEFAULT)
+        self.base_model = resnet50(weights=ResNet50_Weights.DEFAULT)
 
         in_features = self.base_model.fc.in_features
         self.base_model.fc = nn.Identity()
@@ -27,7 +28,7 @@ class FacialRecognitionModel(nn.Module):
         Returns logits suitable for `nn.CrossEntropyLoss`.
         """
         features = self.base_model(x)
-        vector = torch.flatten(features, start_dim = 1)
+        vector = torch.flatten(features, start_dim=1)
 
         embeddings = self.embedding_layer(vector)
         embeddings = F.relu(embeddings)
@@ -35,4 +36,3 @@ class FacialRecognitionModel(nn.Module):
         logits = self.classifier(embeddings)
 
         return logits
-

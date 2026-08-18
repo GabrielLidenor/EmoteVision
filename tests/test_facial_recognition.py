@@ -1,12 +1,12 @@
 import pytest
 import torch
-from src.models import FacialRecognitionModel
+from src.models import EmoteVisionModel
 
 def test_model_output_shape():
     batch_size = 4
     num_classes = 5
 
-    model = FacialRecognitionModel(num_classes = num_classes)
+    model = EmoteVisionModel(num_classes = num_classes)
 
     fake_images = torch.randn(batch_size, 3, 150, 150)
 
@@ -16,7 +16,7 @@ def test_model_output_shape():
     assert output.shape == (batch_size, num_classes), f"Expected shape {(batch_size, num_classes)}, got {output.shape}"
 
 def test_backbone_weights_are_frozen():
-    model = FacialRecognitionModel()
+    model = EmoteVisionModel()
 
     first_layer_param = next(model.base_model.parameters())
 

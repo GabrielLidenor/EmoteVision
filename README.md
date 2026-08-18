@@ -6,7 +6,7 @@
 [![Tests](https://img.shields.io/badge/Tests-PyTest-green.svg)](tests/)
 
 
-# Facial Expression Recognition
+# EmoteVision
 
 A compact end-to-end training and evaluation pipeline for facial expression classification using a Hugging Face dataset and a ResNet50 backbone.
 
