@@ -23,7 +23,7 @@ source .venv/bin/activate
 
 ```bash
 pip install -U pip
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 ```
 
 ## Quick run
