@@ -1,7 +1,33 @@
 from datasets import load_dataset, load_from_disk
 from src.paths import RAW_DATA_DIR, REPO_ID
+from torch.utils.data import Dataset, TensorDataset, DataLoader as TorchDataLoader
+from PIL import Image
+import numpy as np
 import torch
-from torch.utils.data import TensorDataset, DataLoader as TorchDataLoader
+import torchvision.transforms as T
+
+class HuggingFaceImageDataset(Dataset):
+    def __init__(self, hf_dataset):
+        self.data = hf_dataset
+        self.transform = T.Compose([
+            T.Grayscale(num_output_channels=3),
+            T.ToTensor(),
+            T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        ])
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        item = self.data[idx]
+        img = item['image']
+
+        if not isinstance(img, Image.Image):
+            img = Image.fromarray(np.uint8(img))
+
+        x = self.transform(img)
+        y = torch.tensor(item['label'], dtype=torch.long)
+        return x, y
 
 class DataLoader:
     def __init__(self, test_size = 0.2, batch_size = 32, seed = 42, num_workers = 2):
@@ -13,9 +39,10 @@ class DataLoader:
         self.num_workers = num_workers
 
     def download(self):
-        dataset = load_dataset(self.repository_id)
-
-        dataset.save_to_disk(str(self.local_path))
+        # only download if there's not data in raw folder
+        if not any(self.local_path.iterdir()):
+            dataset = load_dataset(self.repository_id)
+            dataset.save_to_disk(str(self.local_path))
 
     def load(self):
         if not any(self.local_path.iterdir()):
@@ -32,18 +59,15 @@ class DataLoader:
         return X_train, y_train
 
     def get_train_loader(self):
-        X_train, y_train = self.get_train_data()
-
-        X_tensor = torch.tensor(X_train, dtype = torch.float32)
-        y_tensor = torch.tensor(y_train, dtype = torch.long)
-
-        dataset = TensorDataset(X_tensor, y_tensor)
+        train_data = self.load()['train']
+        dataset = HuggingFaceImageDataset(train_data)
 
         return TorchDataLoader(
                 dataset,
                 batch_size = self.batch_size,
                 shuffle = True,
-                num_workers = self.num_workers
+                num_workers = self.num_workers,
+                pin_memory = True
                 )
 
     def get_test_data(self):
@@ -55,16 +79,13 @@ class DataLoader:
         return X_test, y_test
 
     def get_test_loader(self):
-        X_test, y_test = self.get_test_data()
-
-        X_tensor = torch.tensor(X_test, dtype = torch.float32)
-        y_tensor = torch.tensor(y_test, dtype = torch.long)
-
-        dataset = TensorDataset(X_tensor, y_tensor)
+        test_data = self.load()['test']
+        dataset = HuggingFaceImageDataset(test_data)
 
         return TorchDataLoader(
                 dataset,
                 batch_size = self.batch_size,
                 shuffle = False,
-                num_workers = self.num_workers
+                num_workers = self.num_workers,
+                pin_memory = True
                 )
