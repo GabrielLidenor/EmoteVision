@@ -27,6 +27,7 @@ def run_pipeline(config: dict = None) -> None:
     # Step 1: Data Preparation
     with console.status("[bold green]Loading DataModule...[/bold green]", spinner="dots"):
         data_module = DataLoader(batch_size=config["batch_size"])
+        data_module.download()
     console.print("  Loaded Data Module")
 
     # Step 2: Model & Optimizer Setup
