@@ -37,6 +37,9 @@ class Trainer:
                 # necessary because PyTorch accumulates the weights on backward
                 # if we don't clean this up, it will explode the weights corrupting the training
                 self.optimizer.zero_grad()
+                # pushes image data into Apple Silicon chip or equivalent
+                inputs = inputs.to(device)
+                targets = targets.to(device)
                 # feeds the model with inputs through model's layers to generate new model predictions
                 outputs = self.model(inputs)
                 # compares models outputs with the answers
