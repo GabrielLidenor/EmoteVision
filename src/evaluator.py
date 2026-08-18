@@ -26,10 +26,13 @@ class Evaluator:
         self.model.eval()
         loader = self.data_provider.get_test_loader()
 
+        device = next(self.model.parameters()).device
+
         y_true_list = []
         y_pred_list = []
 
         for x, y in loader:
+            x = x.to(device)
             outputs = self.model(x)
             predictions = torch.argmax(outputs, dim = 1)
 
