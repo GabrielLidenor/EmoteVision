@@ -38,16 +38,12 @@ def run_pipeline(config: dict = None) -> None:
     console.print("  Initialized Model and Optimizer")
 
     # Step 3: Model Training
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-            optimizer, mode = "min", factor = 0.5, patience = 2
-            )
     console.print("\n[bold yellow]Starting Training Loop...[/bold yellow]")
     trainer = Trainer(
         model=model,
         optimizer=optimizer,
         criterion=criterion,
-        epochs=config["epochs"],
-        scheduler=scheduler
+        epochs=config["epochs"]
     )
     trainer.fit(data_provider=data_module)
     console.print("  Training Complete")

@@ -7,12 +7,11 @@ class DataProvider(Protocol):
         ...
 
 class Trainer:
-    def __init__(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer, criterion: Any, epochs: int = 5, scheduler: Any = None):
+    def __init__(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer, criterion: Any, epochs: int = 5):
         self.model = model
         self.optimizer = optimizer
         self.criterion = criterion
         self.epochs = epochs
-        self.scheduler = scheduler
 
     def fit(self, data_provider: DataProvider):
         train_loader = data_provider.get_train_loader()
@@ -52,9 +51,6 @@ class Trainer:
                 pbar.set_postfix(loss=f"{loss.item():.4f}")
 
                 avg_loss = running_loss / len(train_loader)
-
-                if self.scheduler is not None:
-                    self.scheduler.step(avg_loss)
 
             avg_loss = running_loss / len(train_loader)
             print(f"Epoch [{epoch+1}/{self.epochs}] - Loss: {avg_loss:.4f}")
