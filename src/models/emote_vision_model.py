@@ -5,7 +5,7 @@ from torchvision.models import resnet50, ResNet50_Weights
 
 
 class EmoteVisionModel(nn.Module):
-    def __init__(self, embedding_size: int = 512, num_classes: int = 7):
+    def __init__(self, embedding_size: int = 512, num_classes: int = 4):
         super().__init__()
 
         # Pretrained ResNet50 backbone
