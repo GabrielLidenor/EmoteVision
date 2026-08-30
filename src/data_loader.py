@@ -11,6 +11,10 @@ class HuggingFaceImageDataset(Dataset):
         self.data = hf_dataset
         self.transform = T.Compose([
             T.Grayscale(num_output_channels=3),
+            T.Resize((224,224)),
+            T.RandomHorizontalFlip(p=0.5),
+            T.RandomRotation(degrees=10),
+            T.RandomApply([T.ColorJitter(brightness=0.2, contrast=0.2)], p=0.5),
             T.ToTensor(),
             T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
