@@ -1,6 +1,7 @@
 import pytest
 from src.models import EmoteVisionModel
 from src import Trainer
+import os
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
@@ -43,3 +44,16 @@ def test_fit_changes_model_weight(trainer_setup):
     trainer.fit(data_provider = dummy_data)
 
     assert not torch.equal(initial_weight, model.weight), "Model weights did not update during training!"
+
+def test_fit_saves_model_in_artifacts(tmp_path, trainer_setup, monkeypatch):
+    trainer, _ = trainer_setup
+
+    monkeypatch.setattr("src.trainer.ARTIFACTS_DIR", str(tmp_path / "artifacts"))
+
+    artifacts_folder = tmp_path / "artifacts" / "models"
+    dummy_data = DummyTrainDataModule()
+
+    trainer.fit(data_provider=dummy_data)
+
+    assert artifacts_folder.exists(), "Models directory was not created"
+    assert any(artifacts_folder.iterdir()), "Models directory is empty"

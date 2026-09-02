@@ -1,6 +1,8 @@
 from typing import Protocol, Any
 import torch
 from tqdm import tqdm
+from pathlib import Path
+from src.paths import ARTIFACTS_DIR
 
 class DataProvider(Protocol):
     def get_train_loader(self) -> Any:
@@ -12,6 +14,12 @@ class Trainer:
         self.optimizer = optimizer
         self.criterion = criterion
         self.epochs = epochs
+
+    def _save_model_weights(self):
+        artifacts_path = Path(f"{ARTIFACTS_DIR}/models")
+        artifacts_path.mkdir(parents = True, exist_ok = True)
+
+        torch.save(self.model.state_dict(), artifacts_path / "model_weights.pt")
 
     def fit(self, data_provider: DataProvider):
         train_loader = data_provider.get_train_loader()
@@ -54,3 +62,5 @@ class Trainer:
 
             avg_loss = running_loss / len(train_loader)
             print(f"Epoch [{epoch+1}/{self.epochs}] - Loss: {avg_loss:.4f}")
+
+            self._save_model_weights()
