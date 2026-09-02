@@ -16,8 +16,9 @@ data/processed/*
 !data/processed/.gitkeep
 
 # Machine Learning Artifacts
-artifacts/*
-!artifacts/.gitkeep
+artifacts/**
+!artifacts/**/
+!artifacts/**/.gitkeep
 
 # Python Virtual Environments
 __pycache__
