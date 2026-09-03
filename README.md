@@ -13,6 +13,7 @@ tags:
 [![Framework](https://img.shields.io/badge/Framework-PyTorch-red.svg)](https://pytorch.org/)
 [![Hugging Face Model](https://img.shields.io/badge/Hugging%20Face-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/gabriellidenor/EmoteVision)
 [![Hugging Face Datasets](https://img.shields.io/badge/Hugging%20Face-Datasets-blue.svg)](https://huggingface.co/datasets/gabriellidenor/facial_emotion_images)
+[![Hugging Face Space](https://img.shields.io/badge/Hugging%20Face-Space-yellow.svg)](https://huggingface.co/spaces/gabriellidenor/EmoteVision)
 [![GPU Support](https://img.shields.io/badge/Acceleration-CUDA%20%7C%20MPS-yellowgreen.svg)](https://pytorch.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Tests](https://img.shields.io/badge/Tests-PyTest-green.svg)](tests/)
