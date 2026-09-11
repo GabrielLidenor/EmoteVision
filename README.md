@@ -23,6 +23,12 @@ tags:
 
 A compact end-to-end training and evaluation pipeline for facial expression classification using a Hugging Face dataset and a ResNet50 backbone.
 
+## Live Demo
+
+Try the interactive digit recognition app directly in your browser—no local installation required:
+
+**[Launch Hugging Face Space Demo](https://huggingface.co/spaces/gabriellidenor/EmoteVision)**
+
 ## Installation
 
 1. Create and activate a Python virtual environment (recommended):
