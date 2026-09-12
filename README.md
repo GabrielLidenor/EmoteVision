@@ -25,7 +25,7 @@ A compact end-to-end training and evaluation pipeline for facial expression clas
 
 ## Live Demo
 
-Try the interactive digit recognition app directly in your browser—no local installation required:
+Try the interactive facial expression recognition app right in your browser. No installation needed.
 
 **[Launch Hugging Face Space Demo](https://huggingface.co/spaces/gabriellidenor/EmoteVision)**
 
