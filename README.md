@@ -81,7 +81,7 @@ Top-level files and folders:
     - `pipeline.py`: orchestrates data download, training, evaluation, artifact export
     - `trainer.py`: training loop that consumes a `DataProvider` (returns a PyTorch `DataLoader`)
     - `evaluator.py`: evaluation helpers and artifact export (metrics, confusion matrix)
-    - `models/`: model definitions (ResNet50 backbone + classifier head)
+    - `models/`: classical and quantum ResNet50 model definitions
 - `data/`: storage for raw and processed datasets
    - `data/raw/`: persisted Hugging Face dataset (created by `save_to_disk()`)
    - `data/processed/`: optional processed artifacts
@@ -100,6 +100,7 @@ Top-level files and folders:
    - Backbone: pretrained `resnet50` (most layers frozen except `layer4` by default).
    - Embedding head: `Linear(in_features, embedding_size)` followed by `ReLU`.
    - Classifier head: `Linear(embedding_size, num_classes)` returning logits for `CrossEntropyLoss`.
+   - Optional `EmoteVisionQuantumModel`: replaces ResNet's classifier with a four-qubit, two-layer PennyLane head that returns class logits. It currently uses the `default.qubit` simulator with backpropagation; the training pipeline continues to use the classical model by default.
 4. Training
    - `Trainer.fit()` fetches `train_loader` and runs forward → loss (`CrossEntropyLoss`) → backward → optimizer.step().
 5. Evaluation
