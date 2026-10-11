@@ -57,6 +57,27 @@ Configuration options are available via CLI flags in `main.py` or by calling `ru
 
 Downloaded dataset artifacts are saved to `data/raw` by `src/data_loader.DataLoader.download()` using Hugging Face `datasets.save_to_disk()`.
 
+## Command-line arguments
+
+| Argument | Default | Description |
+|---|---:|---|
+| `--batch_size` | `32` | Number of images per training batch. |
+| `--epochs` | `10` | Number of training epochs. |
+| `--lr` | `0.005` | Adam optimizer learning rate. |
+| `--use_quantum` | Off | Use the PennyLane quantum model instead of the classical model. This is a flag; do not pass `True` or `False` after it. |
+
+Examples:
+
+```bash
+# Train the classical model
+python main.py --epochs 1 --batch_size 8
+
+# Train the quantum model
+python main.py --epochs 1 --batch_size 8 --use_quantum
+```
+
+Quantum-model training currently runs on the CPU because the PennyLane `default.qubit` simulator used by this project is CPU-based. The classical model automatically uses an available accelerator (MPS, CUDA, or CPU).
+
 ## Running tests
 
 Unit tests use `pytest` and are located in the `tests/` folder. Run them with:
