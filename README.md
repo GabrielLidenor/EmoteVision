@@ -57,6 +57,27 @@ Configuration options are available via CLI flags in `main.py` or by calling `ru
 
 Downloaded dataset artifacts are saved to `data/raw` by `src/data_loader.DataLoader.download()` using Hugging Face `datasets.save_to_disk()`.
 
+## Command-line arguments
+
+| Argument | Default | Description |
+|---|---:|---|
+| `--batch_size` | `32` | Number of images per training batch. |
+| `--epochs` | `10` | Number of training epochs. |
+| `--lr` | `0.005` | Adam optimizer learning rate. |
+| `--use_quantum` | Off | Use the PennyLane quantum model instead of the classical model. This is a flag; do not pass `True` or `False` after it. |
+
+Examples:
+
+```bash
+# Train the classical model
+python main.py --epochs 1 --batch_size 8
+
+# Train the quantum model
+python main.py --epochs 1 --batch_size 8 --use_quantum
+```
+
+Quantum-model training currently runs on the CPU because the PennyLane `default.qubit` simulator used by this project is CPU-based. The classical model automatically uses an available accelerator (MPS, CUDA, or CPU).
+
 ## Running tests
 
 Unit tests use `pytest` and are located in the `tests/` folder. Run them with:
@@ -81,7 +102,7 @@ Top-level files and folders:
     - `pipeline.py`: orchestrates data download, training, evaluation, artifact export
     - `trainer.py`: training loop that consumes a `DataProvider` (returns a PyTorch `DataLoader`)
     - `evaluator.py`: evaluation helpers and artifact export (metrics, confusion matrix)
-    - `models/`: model definitions (ResNet50 backbone + classifier head)
+    - `models/`: classical and quantum ResNet50 model definitions
 - `data/`: storage for raw and processed datasets
    - `data/raw/`: persisted Hugging Face dataset (created by `save_to_disk()`)
    - `data/processed/`: optional processed artifacts
@@ -100,6 +121,7 @@ Top-level files and folders:
    - Backbone: pretrained `resnet50` (most layers frozen except `layer4` by default).
    - Embedding head: `Linear(in_features, embedding_size)` followed by `ReLU`.
    - Classifier head: `Linear(embedding_size, num_classes)` returning logits for `CrossEntropyLoss`.
+   - Optional `EmoteVisionQuantumModel`: replaces ResNet's classifier with a four-qubit, two-layer PennyLane head that returns class logits. It currently uses the `default.qubit` simulator with backpropagation; the training pipeline continues to use the classical model by default.
 4. Training
    - `Trainer.fit()` fetches `train_loader` and runs forward → loss (`CrossEntropyLoss`) → backward → optimizer.step().
 5. Evaluation

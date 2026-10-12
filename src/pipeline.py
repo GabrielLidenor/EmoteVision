@@ -7,6 +7,7 @@ from rich.panel import Panel
 
 from src import DataLoader, Trainer, Evaluator
 from src.models import EmoteVisionModel
+from src.models import EmoteVisionQuantumModel
 
 console = Console()
 
@@ -16,7 +17,8 @@ def run_pipeline(config: dict = None) -> None:
             "batch_size": 32,
             "learning_rate": 0.001,
             "epochs": 10,
-            "output_dir": "outputs"
+            "output_dir": "outputs",
+            "use_quantum": False
         }
 
     output_dir = config.get("output_dir", "outputs")
@@ -31,11 +33,17 @@ def run_pipeline(config: dict = None) -> None:
     console.print("  Loaded Data Module")
 
     # Step 2: Model & Optimizer Setup
-    with console.status("[bold green]Initializing Model & Optimizer...[/bold green]", spinner="dots"):
-        model = EmoteVisionModel()
-        optimizer = optim.Adam(model.parameters(), lr=config["learning_rate"])
-        criterion = nn.CrossEntropyLoss()
-    console.print("  Initialized Model and Optimizer")
+    if config.get("use_quantum", False):
+        with console.status("[bold green]Initializing Quantum Model & Optimizer...[/bold green]", spinner="dots"):
+            model = EmoteVisionQuantumModel()
+            console.print("  Initialized Quantum Model ")
+    else:
+        with console.status("[bold green]Initializing Model & Optimizer...[/bold green]", spinner="dots"):
+            model = EmoteVisionModel()
+
+    optimizer = optim.Adam(model.parameters(), lr=config["learning_rate"])
+    criterion = nn.CrossEntropyLoss()
+    console.print("  Initialized Optimizer ")
 
     # Step 3: Model Training
     console.print("\n[bold yellow]Starting Training Loop...[/bold yellow]")
@@ -43,7 +51,8 @@ def run_pipeline(config: dict = None) -> None:
         model=model,
         optimizer=optimizer,
         criterion=criterion,
-        epochs=config["epochs"]
+        epochs=config["epochs"],
+        train_on_quantum=config["use_quantum"]
     )
     trainer.fit(data_provider=data_module)
     console.print("  Training Complete")

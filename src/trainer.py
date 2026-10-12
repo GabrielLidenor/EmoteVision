@@ -9,11 +9,12 @@ class DataProvider(Protocol):
         ...
 
 class Trainer:
-    def __init__(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer, criterion: Any, epochs: int = 5):
+    def __init__(self, model: torch.nn.Module, optimizer: torch.optim.Optimizer, criterion: Any, epochs: int = 5, train_on_quantum = False):
         self.model = model
         self.optimizer = optimizer
         self.criterion = criterion
         self.epochs = epochs
+        self.train_on_quantum = train_on_quantum
 
     def _save_model_weights(self):
         artifacts_path = Path(f"{ARTIFACTS_DIR}/models")
@@ -25,7 +26,7 @@ class Trainer:
         train_loader = data_provider.get_train_loader()
 
         # Detect device (MPS for Mac M4, CUDA for Nvidia, or CPU)
-        device = torch.device("mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu")
+        device = torch.device("cpu" if self.train_on_quantum else "mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu")
         print(f"Training on device: {device}")
 
         # push model to the accelaration device
