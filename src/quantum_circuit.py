@@ -8,8 +8,9 @@ class QuantumCircuit(nn.Module):
         super().__init__()
         self.num_of_qubits = num_of_qubits
         self.device = self.configure_ibm_backend() if run_on_ibm else self.configure_local_simulation()
+        diff_method = "parameter-shift" if run_on_ibm else "backprop"
 
-        @qp.qnode(self.device, interface='torch', diff_method='parameter-shift')
+        @qp.qnode(self.device, interface='torch', diff_method=diff_method)
         def _circuit(inputs, weights):
             qp.AngleEmbedding(inputs, wires=range(num_of_qubits), rotation='Y')
             qp.StronglyEntanglingLayers(weights, wires=range(num_of_qubits))

@@ -16,6 +16,17 @@ def test_local_simulation_runs_and_returns_one_measurement_per_qubit():
     assert output.shape == (1, num_of_qubits)
 
 
+def test_local_simulation_backpropagates_for_batched_inputs():
+    num_of_qubits = 2
+    circuit = QuantumCircuit(num_of_qubits=num_of_qubits, num_layers=1)
+    inputs = torch.zeros((2, num_of_qubits), requires_grad=True)
+
+    circuit(inputs).sum().backward()
+
+    assert inputs.grad is not None
+    assert circuit.qlayer.weights.grad is not None
+
+
 def test_ibm_backend_requires_a_token(monkeypatch):
     monkeypatch.delenv("IBM_QUANTUM_TOKEN", raising=False)
 
