@@ -9,8 +9,11 @@ class EmoteVisionQuantumHead(nn.Module):
         super().__init__()
         self.reducer = nn.Linear(in_features, number_of_qubits)
 
-        quantum_circuit = QuantumCircuit(number_of_qubits)
-        self.qlayer = qp.qnn.TorchLayer(quantum_circuit.quantum_function, {'weights': (number_of_layers, number_of_qubits, 3)})
+        self.qlayer = QuantumCircuit(
+            num_of_qubits = number_of_qubits,
+            num_layers = number_of_layers
+        )
+
         self.fc_final = nn.Linear(number_of_qubits, number_of_classes)
 
     def forward(self, x):
