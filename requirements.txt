@@ -6,3 +6,4 @@ seaborn
 pennylane
 pennylane-qiskit
 qiskit-ibm-runtime
+python-dotenv
