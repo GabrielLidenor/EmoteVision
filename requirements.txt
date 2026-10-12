@@ -4,3 +4,5 @@ torchvision
 matplotlib
 seaborn
 pennylane
+pennylane-qiskit
+qiskit-ibm-runtime
