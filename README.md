@@ -1,16 +1,22 @@
 ---
 language:
-- en
+  - en
 license: mit
 pipeline_tag: image-classification
 tags:
-- vision
-- PyTorch
-- torchvision
+  - vision
+  - PyTorch
+  - torchvision
+  - torchvision
+  - pennylane
+  - qiskit
+  - quantum-computing
+  - hybrid-quantum-classical
 ---
 
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.14-blue.svg)](https://www.python.org/)
 [![Framework](https://img.shields.io/badge/Framework-PyTorch-red.svg)](https://pytorch.org/)
+[![PennyLane](https://img.shields.io/badge/Quantum-PennyLane-6112a3.svg)](https://pennylane.ai/)
 [![Hugging Face Model](https://img.shields.io/badge/Hugging%20Face-Model-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/gabriellidenor/EmoteVision)
 [![Hugging Face Datasets](https://img.shields.io/badge/Hugging%20Face-Datasets-blue.svg)](https://huggingface.co/datasets/gabriellidenor/facial_emotion_images)
 [![Hugging Face Space](https://img.shields.io/badge/Hugging%20Face-Space-yellow.svg)](https://huggingface.co/spaces/gabriellidenor/EmoteVision)
@@ -18,10 +24,11 @@ tags:
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Tests](https://img.shields.io/badge/Tests-PyTest-green.svg)](tests/)
 
-
 # EmoteVision
 
-A compact end-to-end training and evaluation pipeline for facial expression classification using a Hugging Face dataset and a ResNet50 backbone.
+An end-to-end **Hybrid Quantum-Classical Machine Learning (HQML)** pipeline for facial expression recognition.
+
+EmoteVision pairs a pretrained **ResNet50** classical feature-extraction backbone with a **Variational Quantum Circuit (VQC)** powered by PennyLane. The architecture supports local simulator training (`default.qubit`) as well as direct deployment to real **IBM Quantum hardware** using `qiskit-ibm-runtime` and parameter-shift gradients.
 
 ## Live Demo
 
@@ -59,13 +66,13 @@ Downloaded dataset artifacts are saved to `data/raw` by `src/data_loader.DataLoa
 
 ## Command-line arguments
 
-| Argument | Default | Description |
-|---|---:|---|
-| `--batch_size` | `32` | Number of images per training batch. |
-| `--epochs` | `10` | Number of training epochs. |
-| `--lr` | `0.005` | Adam optimizer learning rate. |
-| `--use_quantum` | Off | Use the PennyLane quantum model instead of the classical model. This is a flag; do not pass `True` or `False` after it. |
-| `--run_on_ibm` | Off | Run the quantum circuit on an IBM Quantum backend. Requires `--use_quantum` and IBM Quantum credentials. |
+| Argument        | Default | Description                                                                                                             |
+| --------------- | ------: | ----------------------------------------------------------------------------------------------------------------------- |
+| `--batch_size`  |    `32` | Number of images per training batch.                                                                                    |
+| `--epochs`      |    `10` | Number of training epochs.                                                                                              |
+| `--lr`          | `0.005` | Adam optimizer learning rate.                                                                                           |
+| `--use_quantum` |     Off | Use the PennyLane quantum model instead of the classical model. This is a flag; do not pass `True` or `False` after it. |
+| `--run_on_ibm`  |     Off | Run the quantum circuit on an IBM Quantum backend. Requires `--use_quantum` and IBM Quantum credentials.                |
 
 Examples:
 
@@ -89,6 +96,7 @@ The default quantum command uses PennyLane's local `default.qubit` simulator. To
    ```
 
    Set `IBM_QUANTUM_TOKEN` in `.env` to your token. Do not commit or share `.env`; it is ignored by Git.
+
 3. Run the pipeline with both quantum flags:
 
    ```bash
@@ -108,6 +116,7 @@ pytest -q
 ```
 
 Key tests:
+
 - `tests/test_data_loader.py`: dataset download/load and DataLoader constructions (uses mocks)
 - `tests/test_facial_recognition.py`: model shapes and frozen backbone checks
 - `tests/test_trainer.py`: training loop behaviours
@@ -118,15 +127,15 @@ Top-level files and folders:
 
 - `main.py`: CLI entrypoint to run the pipeline
 - `src/`: application code
-    - `data_loader.py`: dataset download/persistence and PyTorch `DataLoader` wrapping
-    - `paths.py`: project path constants (e.g., `data/raw`)
-    - `pipeline.py`: orchestrates data download, training, evaluation, artifact export
-    - `trainer.py`: training loop that consumes a `DataProvider` (returns a PyTorch `DataLoader`)
-    - `evaluator.py`: evaluation helpers and artifact export (metrics, confusion matrix)
-    - `models/`: classical and quantum ResNet50 model definitions
+  - `data_loader.py`: dataset download/persistence and PyTorch `DataLoader` wrapping
+  - `paths.py`: project path constants (e.g., `data/raw`)
+  - `pipeline.py`: orchestrates data download, training, evaluation, artifact export
+  - `trainer.py`: training loop that consumes a `DataProvider` (returns a PyTorch `DataLoader`)
+  - `evaluator.py`: evaluation helpers and artifact export (metrics, confusion matrix)
+  - `models/`: classical and quantum ResNet50 model definitions
 - `data/`: storage for raw and processed datasets
-   - `data/raw/`: persisted Hugging Face dataset (created by `save_to_disk()`)
-   - `data/processed/`: optional processed artifacts
+  - `data/raw/`: persisted Hugging Face dataset (created by `save_to_disk()`)
+  - `data/processed/`: optional processed artifacts
 - `outputs/`: saved artifacts: `metrics.json`, `confusion_matrix.png`, etc.
 - `tests/`: unit tests
 - `requirements.txt` and `requirements-dev.txt`
@@ -168,7 +177,6 @@ Common causes for unexpectedly large loss (what to check):
 - **Numerical instability:** NaNs in inputs/outputs or extremely large activations (inspect `torch.isnan()` and output statistics).
 
 If you'd like to experiment with embeddings instead, I can add a configurable option to switch between `CrossEntropyLoss` and a metric loss, implement simple contrastive sampling, or add runtime checks/logging to `Trainer.fit()` to surface the most common issues.
-
 
 ## Debugging tips
 
