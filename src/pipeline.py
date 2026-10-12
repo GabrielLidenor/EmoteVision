@@ -18,7 +18,8 @@ def run_pipeline(config: dict = None) -> None:
             "learning_rate": 0.001,
             "epochs": 10,
             "output_dir": "outputs",
-            "use_quantum": False
+            "use_quantum": False,
+            "run_on_ibm": False
         }
 
     output_dir = config.get("output_dir", "outputs")
@@ -35,7 +36,7 @@ def run_pipeline(config: dict = None) -> None:
     # Step 2: Model & Optimizer Setup
     if config.get("use_quantum", False):
         with console.status("[bold green]Initializing Quantum Model & Optimizer...[/bold green]", spinner="dots"):
-            model = EmoteVisionQuantumModel()
+            model = EmoteVisionQuantumModel(run_on_ibm = config.get("run_on_ibm", False))
             console.print("  Initialized Quantum Model ")
     else:
         with console.status("[bold green]Initializing Model & Optimizer...[/bold green]", spinner="dots"):

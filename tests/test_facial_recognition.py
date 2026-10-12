@@ -37,4 +37,4 @@ def test_quantum_model_output_shape():
     assert isinstance(output, torch.Tensor)
     assert output.shape == (batch_size, num_classes)
     assert model.base_model.fc.reducer.weight.requires_grad is True
-    assert model.base_model.fc.qlayer.weights.grad is not None
+    assert model.base_model.fc.qlayer.qlayer.weights.grad is not None

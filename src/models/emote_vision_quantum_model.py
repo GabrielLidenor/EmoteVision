@@ -5,7 +5,7 @@ from src.emote_vision_quantum_head import EmoteVisionQuantumHead
 
 
 class EmoteVisionQuantumModel(nn.Module):
-    def __init__(self, number_of_classes: int = 4):
+    def __init__(self, number_of_classes: int = 4, run_on_ibm: bool = False):
         super().__init__()
 
         self.base_model = resnet50(weights=ResNet50_Weights.DEFAULT)
@@ -17,9 +17,10 @@ class EmoteVisionQuantumModel(nn.Module):
 
         self.base_model.fc = EmoteVisionQuantumHead(
             model_features,
-            number_of_layers=2,
-            number_of_qubits=4,
-            number_of_classes=number_of_classes,
+            number_of_layers = 10,
+            number_of_qubits = 11,
+            number_of_classes = number_of_classes,
+            run_on_ibm = run_on_ibm
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
