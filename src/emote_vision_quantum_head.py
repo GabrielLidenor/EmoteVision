@@ -5,13 +5,14 @@ from src import QuantumCircuit
 import torch.nn.functional as F
 
 class EmoteVisionQuantumHead(nn.Module):
-    def __init__(self, in_features, number_of_layers, number_of_qubits, number_of_classes):
+    def __init__(self, in_features, number_of_layers, number_of_qubits, number_of_classes, run_on_ibm = False):
         super().__init__()
         self.reducer = nn.Linear(in_features, number_of_qubits)
 
         self.qlayer = QuantumCircuit(
             num_of_qubits = number_of_qubits,
-            num_layers = number_of_layers
+            num_layers = number_of_layers,
+            run_on_ibm = run_on_ibm
         )
 
         self.fc_final = nn.Linear(number_of_qubits, number_of_classes)
