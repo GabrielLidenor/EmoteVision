@@ -65,6 +65,7 @@ Downloaded dataset artifacts are saved to `data/raw` by `src/data_loader.DataLoa
 | `--epochs` | `10` | Number of training epochs. |
 | `--lr` | `0.005` | Adam optimizer learning rate. |
 | `--use_quantum` | Off | Use the PennyLane quantum model instead of the classical model. This is a flag; do not pass `True` or `False` after it. |
+| `--run_on_ibm` | Off | Run the quantum circuit on an IBM Quantum backend. Requires `--use_quantum` and IBM Quantum credentials. |
 
 Examples:
 
@@ -76,7 +77,27 @@ python main.py --epochs 1 --batch_size 8
 python main.py --epochs 1 --batch_size 8 --use_quantum
 ```
 
-Quantum-model training currently runs on the CPU because the PennyLane `default.qubit` simulator used by this project is CPU-based. The classical model automatically uses an available accelerator (MPS, CUDA, or CPU).
+### Run on IBM Quantum hardware
+
+The default quantum command uses PennyLane's local `default.qubit` simulator. To use an IBM Quantum backend:
+
+1. Create an IBM Quantum account and obtain an API token. Configure access to an IBM Quantum instance that has an operational backend with at least 11 qubits.
+2. Create a local `.env` file from the example and put your token in it:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Set `IBM_QUANTUM_TOKEN` in `.env` to your token. Do not commit or share `.env`; it is ignored by Git.
+3. Run the pipeline with both quantum flags:
+
+   ```bash
+   python main.py --epochs 1 --batch_size 1 --use_quantum --run_on_ibm
+   ```
+
+`--run_on_ibm` selects the least-busy operational, non-simulator backend with enough qubits. It only applies when `--use_quantum` is also supplied. The hardware circuit uses finite-shot measurements, so results can vary between runs and execution can be slow or consume IBM Quantum usage. Start with a small batch and a short run.
+
+Quantum-model training is computationally intensive: the trainer places it on the CPU, and the hardware QNode uses parameter-shift gradients. The classical model automatically uses an available accelerator (MPS, CUDA, or CPU).
 
 ## Running tests
 
@@ -121,7 +142,7 @@ Top-level files and folders:
    - Backbone: pretrained `resnet50` (most layers frozen except `layer4` by default).
    - Embedding head: `Linear(in_features, embedding_size)` followed by `ReLU`.
    - Classifier head: `Linear(embedding_size, num_classes)` returning logits for `CrossEntropyLoss`.
-   - Optional `EmoteVisionQuantumModel`: replaces ResNet's classifier with a four-qubit, two-layer PennyLane head that returns class logits. It currently uses the `default.qubit` simulator with backpropagation; the training pipeline continues to use the classical model by default.
+   - Optional `EmoteVisionQuantumModel`: replaces ResNet's classifier with an 11-qubit, 10-layer PennyLane head that returns class logits. It uses the `default.qubit` local simulator by default, or an IBM Quantum backend when `--run_on_ibm` is selected. The training pipeline continues to use the classical model by default.
 4. Training
    - `Trainer.fit()` fetches `train_loader` and runs forward → loss (`CrossEntropyLoss`) → backward → optimizer.step().
 5. Evaluation
